@@ -612,16 +612,16 @@ class PRESENT_KS(SageObject):
 
     EXAMPLES:
 
-    Initialise the key schedule with a `master\_key` to use it as an iterable::
+    Initialise the key schedule with a `main\_key` to use it as an iterable::
 
         sage: from sage.crypto.block_cipher.present import PRESENT_KS
-        sage: ks = PRESENT_KS(master_key=0)
+        sage: ks = PRESENT_KS(main_key=0)
         sage: ks[0] == 0x0
         True
         sage: ks[31] == 0x6dab31744f41d700
         True
 
-    Or omit the `master\_key` and pass a key when calling the key schedule::
+    Or omit the `main\_key` and pass a key when calling the key schedule::
 
         sage: ks = PRESENT_KS(keysize=128)
         sage: K = ks(0x00112233445566778899aabbccddeeff)
@@ -710,7 +710,7 @@ class PRESENT_KS(SageObject):
     .. automethod:: __call__
     """
 
-    def __init__(self, keysize=80, rounds=31, master_key=None):
+    def __init__(self, keysize=80, rounds=31, main_key=None):
         r"""
         Construct an instance of PRESENT_KS.
 
@@ -722,7 +722,7 @@ class PRESENT_KS(SageObject):
         - ``rounds`` -- integer (default: ``31``); the number of rounds
           ``self`` can create keys for
 
-        - ``master_key`` -- integer or bit list-like (default: ``None``); the
+        - ``main_key`` -- integer or bit list-like (default: ``None``); the
           key that will be used
 
         EXAMPLES::
@@ -734,8 +734,8 @@ class PRESENT_KS(SageObject):
         .. NOTE::
 
             If you want to use a PRESENT_KS object as an iterable you have to
-            pass a ``master_key`` value on initialisation. Otherwise you can
-            omit ``master_key`` and pass a key when you call the object.
+            pass a ``main_key`` value on initialisation. Otherwise you can
+            omit ``main_key`` and pass a key when you call the object.
         """
         if keysize != 80 and keysize != 128:
             raise ValueError('keysize must bei either 80 or 128 and not %s'
@@ -743,7 +743,7 @@ class PRESENT_KS(SageObject):
         self._keysize = keysize
         self._rounds = rounds
         self.sbox = PRESENTSBOX
-        self._master_key = master_key
+        self._main_key = main_key
 
     def __call__(self, K):
         r"""
@@ -771,8 +771,8 @@ class PRESENT_KS(SageObject):
         .. NOTE::
 
             If you want to use a PRESENT_KS object as an iterable you have to
-            pass a ``master_key`` value on initialisation. Otherwise you can
-            omit ``master_key`` and pass a key when you call the object.
+            pass a ``main_key`` value on initialisation. Otherwise you can
+            omit ``main_key`` and pass a key when you call the object.
         """
         if isinstance(K, (list, tuple, Vector_mod2_dense)):
             inputType = 'vector'
@@ -836,10 +836,10 @@ class PRESENT_KS(SageObject):
 
     def __getitem__(self, r):
         r"""
-        Computes the sub key for round ``r`` derived from initial master key.
+        Computes the sub key for round ``r`` derived from initial main key.
 
         The key schedule object has to have been initialised with the
-        `master_key` argument.
+        `main_key` argument.
 
         INPUT:
 
@@ -848,33 +848,33 @@ class PRESENT_KS(SageObject):
         EXAMPLES::
 
             sage: from sage.crypto.block_cipher.present import PRESENT_KS
-            sage: ks = PRESENT_KS(master_key=0x0)
+            sage: ks = PRESENT_KS(main_key=0x0)
             sage: ks[0] ==  0x0 # indirect doctest
             True
             sage: ks[31] ==  0x6dab31744f41d700 # indirect doctest
             True
         """
-        if self._master_key is None:
+        if self._main_key is None:
             raise ValueError('Key not set during initialisation')
-        return self(self._master_key)[r]
+        return self(self._main_key)[r]
 
     def __iter__(self):
         """
         Iterate over the ``self._rounds + 1`` PRESENT round keys, derived from
-        `master_key`
+        `main_key`
 
         EXAMPLES::
 
             sage: from sage.crypto.block_cipher.present import PRESENT_KS
-            sage: K = [k for k in PRESENT_KS(master_key=0x0)]
+            sage: K = [k for k in PRESENT_KS(main_key=0x0)]
             sage: K[0] == 0x0 # indirect doctest
             True
             sage: K[31] == 0x6dab31744f41d700 # indirect doctest
             True
         """
-        if self._master_key is None:
+        if self._main_key is None:
             raise ValueError('Key not set during initialisation')
-        return iter(self(self._master_key))
+        return iter(self(self._main_key))
 
 
 def convert_to_vector(I, L):

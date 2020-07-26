@@ -762,16 +762,16 @@ class DES_KS(SageObject):
 
     EXAMPLES:
 
-    Initialise the key schedule with a `masterKey` to use it as an iterable::
+    Initialise the key schedule with a `mainKey` to use it as an iterable::
 
         sage: from sage.crypto.block_cipher.des import DES_KS
-        sage: ks = DES_KS(masterKey=0)
+        sage: ks = DES_KS(mainKey=0)
         sage: ks[0]
         0
         sage: ks[15]
         0
 
-    Or omit the `masterKey` and pass a key when calling the key schedule::
+    Or omit the `mainKey` and pass a key when calling the key schedule::
 
         sage: ks = DES_KS()
         sage: K = ks(0x584023641ABA6176)
@@ -788,7 +788,7 @@ class DES_KS(SageObject):
     .. automethod:: __call__
     """
 
-    def __init__(self, rounds=16, masterKey=None):
+    def __init__(self, rounds=16, mainKey=None):
         r"""
         Construct an instance of DES_KS.
 
@@ -797,7 +797,7 @@ class DES_KS(SageObject):
         - ``rounds`` -- integer (default: ``16``); the number of rounds
           ``self`` can create keys for
 
-        - ``masterKey`` -- integer or bit list-like (default: ``None``); the
+        - ``mainKey`` -- integer or bit list-like (default: ``None``); the
           64-bit key that will be used
 
         EXAMPLES::
@@ -809,11 +809,11 @@ class DES_KS(SageObject):
         .. NOTE::
 
             If you want to use a DES_KS object as an iterable you have to
-            pass a ``masterKey`` value on initialisation. Otherwise you can
-            omit ``masterKey`` and pass a key when you call the object.
+            pass a ``mainKey`` value on initialisation. Otherwise you can
+            omit ``mainKey`` and pass a key when you call the object.
         """
         self._rounds = rounds
-        self._masterKey = masterKey
+        self._mainKey = mainKey
         self._keySize = 64
 
     def __call__(self, key):
@@ -866,8 +866,8 @@ class DES_KS(SageObject):
         .. NOTE::
 
             If you want to use a DES_KS object as an iterable you have to
-            pass a ``masterKey`` value on initialisation. Otherwise you can
-            omit ``masterKey`` and pass a key when you call the object.
+            pass a ``mainKey`` value on initialisation. Otherwise you can
+            omit ``mainKey`` and pass a key when you call the object.
         """
         if isinstance(key, (list, tuple, Vector_mod2_dense)):
             inputType = 'vector'
@@ -915,10 +915,10 @@ class DES_KS(SageObject):
 
     def __getitem__(self, r):
         r"""
-        Computes the sub key for round ``r`` derived from initial master key.
+        Computes the sub key for round ``r`` derived from initial main key.
 
         The key schedule object has to have been initialised with the
-        `masterKey` argument.
+        `mainKey` argument.
 
         INPUT:
 
@@ -927,32 +927,32 @@ class DES_KS(SageObject):
         EXAMPLES::
 
             sage: from sage.crypto.block_cipher.des import DES_KS
-            sage: ks = DES_KS(masterKey=0x1F08260D1AC2465E)
+            sage: ks = DES_KS(mainKey=0x1F08260D1AC2465E)
             sage: ks[0].hex() # indirect doctest
             '103049bfb90e'
             sage: ks[15].hex() # indirect doctest
             '231000f2dd97'
         """
-        if self._masterKey is None:
+        if self._mainKey is None:
             raise ValueError('Key not set during initialisation')
-        return self(self._masterKey)[r]
+        return self(self._mainKey)[r]
 
     def __iter__(self):
         r"""
-        Iterate over the DES round keys, derived from `masterKey`.
+        Iterate over the DES round keys, derived from `mainKey`.
 
         EXAMPLES::
 
             sage: from sage.crypto.block_cipher.des import DES_KS
-            sage: K = [k for k in DES_KS(masterKey=0x0113B970FD34F2CE)]
+            sage: K = [k for k in DES_KS(mainKey=0x0113B970FD34F2CE)]
             sage: K[0].hex() # indirect doctest
             '6f26cc480fc6'
             sage: K[15].hex() # indirect doctest
             '9778f17524a'
        """
-        if self._masterKey is None:
+        if self._mainKey is None:
             raise ValueError('Key not set during initialisation')
-        return iter(self(self._masterKey))
+        return iter(self(self._mainKey))
 
     def _pc1(self, key):
         r"""
